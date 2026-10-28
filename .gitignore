@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Downloaded dataset and split manifests (do not submit full dataset)
+data/dataset-resized.zip
+data/train/
+data/validation/
+data/test/
+data/split_manifest.json
+
+# Generated experiment outputs and checkpoints
+/results/*
+!/results/.gitkeep
+/results_quick/
+/models/*
+!/models/.gitkeep
+/models/*.pth
+*.tmp
+*.log
+.DS_Store
+._*
