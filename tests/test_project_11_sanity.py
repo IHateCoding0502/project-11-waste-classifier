@@ -57,6 +57,12 @@ def test_sample_data_has_each_class_and_stays_small():
 
 def test_full_dataset_is_not_bundled_in_submission_tree():
     # Local datasets are allowed; tracked submission files must exclude them.
+    ignored = (ROOT / '.gitignore').read_text(encoding='utf-8-sig')
+    assert all(f'data/{split}/' in ignored for split in ('train','validation','test'))
+    if not (ROOT / '.git').is_dir():
+        # A course archive intentionally has no Git metadata. Its content is
+        # checked independently by scripts/package_submission.py.
+        return
     import subprocess
     tracked = subprocess.check_output(['git','ls-files'],cwd=ROOT,text=True).splitlines()
     assert not any(p.startswith(('data/train/','data/validation/','data/test/')) for p in tracked)

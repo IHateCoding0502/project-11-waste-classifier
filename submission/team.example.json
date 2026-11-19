@@ -1,0 +1,13 @@
+{
+  "class_code": "61FIT3AIN-TUT02",
+  "group": 5,
+  "project": 11,
+  "members": [
+    {"name": "", "student_id": "", "representative": false, "tasks": "", "percent": null},
+    {"name": "", "student_id": "", "representative": true, "tasks": "", "percent": null},
+    {"name": "", "student_id": "", "representative": false, "tasks": "", "percent": null}
+  ],
+  "contributions_agreed": false,
+  "midterm_slides": "presentation.pdf",
+  "midterm_slides_confirmed": false
+}

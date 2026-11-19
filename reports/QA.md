@@ -12,14 +12,16 @@
 - Official installed IEEEtran 1.8b conference class, pdflatex + BibTeX + two further pdflatex passes: report.pdf is five letter-size pages. Final log has no undefined references/citations or overfull boxes. All pages were rendered with pdftoppm and visually inspected; text, equations, figures, tables and references are readable with no clipping or overlap.
 - Academic references were verified against arXiv, JMLR and PMLR; disposal references against US EPA, Washington Ecology and the Vietnam Environment Agency. General foreign preparation guidance is not presented as Vietnamese collection acceptance.
 
-## Fresh installation: not yet verified
+## Fresh installation: resolved with Python 3.11
+
+A later independent Python 3.11.16 CPU environment installed all 53 compatible packages and passed 38 tests with one CUDA test skipped. The full 435-image benchmark reproduced 334 correct predictions. The extracted review archive also passed 38 tests with one CUDA skip, and its Streamlit health endpoint returned `ok`. See AIN_SUBMISSION_QA.md. The earlier Python 3.12 installation failures below are retained as historical diagnostics, not the current submission status.
 
 A separate `.venv-qa` was created without inheriting installed project packages. The first sandbox install failed DNS resolution. An authorized network retry found torch/numpy but pip 25.0.1 could not resolve Pillow. Upgrading this new environment to pip 26.3 resolved the package metadata, including Pillow 13.0.0. The subsequent 124.1 MB PyTorch wheel download stalled before yielding file bytes. A retry with timeout 15 seconds and retries 0 was also attempted; it again stalled at the PyTorch wheel, so both stalled installation attempts were stopped. Therefore independent fresh-environment installation and tests are **not reported as passed**. The working app and 39 passing tests above use the original project environment.
 
 To repeat on a working package network:
 
 ```powershell
-py -3.12 -m venv .venv-qa
+py -3.11 -m venv .venv-qa
 .\.venv-qa\Scripts\python.exe -m pip install --upgrade pip
 .\.venv-qa\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv-qa\Scripts\python.exe -m pytest tests -q

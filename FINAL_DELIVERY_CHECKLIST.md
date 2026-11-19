@@ -14,10 +14,14 @@
 - [x] Execute 39 automated tests, including Streamlit upload/prediction/error rendering and CPU/CUDA validation.
 - [x] Start actual Streamlit server and verify HTTP health endpoint returns ok.
 - [x] Provide README, pinned dependencies, checkpoint location/hash, licensing notes, collection protocol, defense Q&A and 5–7 minute demo sequence.
-- [ ] Complete independent fresh-environment installation and tests: see reports/QA.md for the final outcome.
+- [x] Complete independent Python 3.11.16 installation and tests: 38 passed, one CUDA test skipped; see reports/AIN_SUBMISSION_QA.md.
+- [x] Prepare the official-template English Word report with 15 main-body pages, IEEE references, live TOC/captions and Appendices A–C; retain it locally.
+- [x] Verify a review ZIP with one matching root and exactly slides/, code/, report/; exclude environments, editor settings, caches, credentials and full datasets.
+- [ ] Confirm the exact originally presented midterm PDF. The current presentation.pdf is an unconfirmed historical candidate and still has a team-name placeholder.
+- [ ] Fill agreed member tasks and integer contribution percentages totaling 100 in Appendix B; only the representative submits.
 - [ ] Collect genuinely new campus photographs with independent labels and distinct object IDs; run challenge evaluation.
 - [ ] Collect real camera low-light/blur photographs; evaluate separately from synthetic variants.
 - [ ] Expand real complex images to cover crushed cans, crumpled paper, clearly deformed bottles, occlusion and cluttered backgrounds. Current 12-image subset is descriptive and overlaps standard data.
-- [ ] Confirm campus location, local collection arrangements and actual author/team details before submission.
+- [ ] Confirm campus location and local collection arrangements before making location-specific product claims. Member identities and the representative have been supplied locally; no tasks or percentages have been invented.
 
 No synthetic photo is represented as a campus capture. Missing conditions are not evaluated and are never assigned fabricated metrics. Git publication is recorded in the repository commit history.

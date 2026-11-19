@@ -4,6 +4,17 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+env/
+.idea/
+.vscode/
+.ipynb_checkpoints/
+__MACOSX/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kaggle.json
 
 # Downloaded dataset and split manifests (do not submit full dataset)
 data/dataset-resized.zip
@@ -49,6 +60,16 @@ reports/bibtex.txt
 reports/render_log.txt
 reports/pip_upgrade.txt
 reports/report_text.txt
+.venv-submission/
+tmp/
+submission/build/
+submission/*.zip
+submission/*_report.docx
+submission/*_report_APA7.docx
+submission/apa7_verification.json
+submission/team.json
+submission/report_verification.json
+submission/package_verification.json
 *.tmp
 *.log
 .DS_Store

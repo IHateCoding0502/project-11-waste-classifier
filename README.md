@@ -1,25 +1,24 @@
-# Visual Waste Sorting Assistant — Final Milestone
+# Visual Waste Sorting Assistant
 
 Experimental six-class image classifier, using the original from-scratch PyTorch CNN and the selected **aug_none** checkpoint. No model was replaced or retrained during this upgrade.
 
 ## Run locally (Windows PowerShell)
 
-Python 3.12 is the tested interpreter. The existing `.venv` can be used immediately:
+Python **3.11** is the AIN submission target. Install dependencies once:
 
 ```powershell
-.\.venv\Scripts\python.exe -m streamlit run app.py
-```
-
-For a new environment:
-
-```powershell
-py -3.12 -m venv .venv
+py -3.11 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Run the application with one command:
+
+```powershell
 .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-On Linux/macOS use `python3.12 -m venv .venv`, activate it and run the same Python module commands. Upgrade pip first (the original pip 25.0.1 failed to resolve Pillow here; pip 26.3 resolved it). The pinned requirements use the tested package release versions. For CUDA install the corresponding PyTorch build from the official PyTorch index; CPU is supported automatically. `requirements-dev.txt` adds the test runner and historical presentation tooling.
+On Linux/macOS use `python3.11 -m venv .venv`, activate it and run the same Python module commands. Upgrade pip before installation. NumPy 2.3.5 is pinned for Python 3.11; Python 3.12 and newer retain NumPy 2.5.4 from the original environment. Other direct dependencies remain pinned. CPU inference is supported automatically; CUDA depends on the installed PyTorch build. `requirements-dev.txt` adds tests and historical presentation tooling. Once dependencies and the supplied team-trained checkpoint are installed, the application runs offline and does not call an LLM API.
 
 ## Product
 
@@ -47,7 +46,7 @@ The selected aug_none has validation Macro-F1 .720. no_reg achieved .815 but had
 
 Local selected checkpoint: `models/waste_cnn.pth`, SHA-256 `825083ce60c04c0566b736a2089ece09f9a640ba0b72b55ce3b1fadf6ef077c3`. Its size is about 473 KB, so Git LFS is unnecessary. This file is explicitly allowed by `.gitignore` for a reproducible submission; other training checkpoints remain ignored. Do not load untrusted checkpoints. The loader checks metadata, class mapping and strict state-dict compatibility.
 
-A fresh clone only has the checkpoint if the team includes it in its commit/release. No hosted checkpoint URL is invented. To regenerate from the pinned TrashNet source:
+The selected team-trained checkpoint is committed, so a fresh clone can run inference without downloading the dataset or any model weights. To reproduce training from the pinned TrashNet source, first activate the environment (`.\.venv\Scripts\Activate.ps1` on Windows):
 
 ```powershell
 python scripts/prepare_dataset.py --confirm
@@ -58,8 +57,11 @@ This downloads and prepares data, then runs the original experiments; new hardwa
 
 ## Reproduce evaluation
 
+Activate the installed environment first. Checkpoint validation works with the small supplied sample; full benchmark evaluation additionally requires the prepared dataset:
+
 ```powershell
-python scripts/validate_checkpoint.py --image data/test/paper/paper100.jpg
+python scripts/validate_checkpoint.py --image data/sample/paper/paper_01.png
+python scripts/build_analysis_figures.py
 python scripts/collect_dataset_info.py
 python scripts/evaluate_stress_tests.py --prepare --device cpu
 ```
@@ -82,6 +84,12 @@ Outputs include all six scores per image, checksums, environment, source-cluster
 
 ## Report and defense
 
+The [submission instructions](submission/README.md) map the guide to the repository and explain how to build the required ZIP. GitHub contains the runnable starter project; the ZIP contains one root named `61FIT3AIN-TUT02_G05_P11` with `slides/`, `code/`, and `report/`. Do not rename or duplicate the starter tree merely to mirror the ZIP layout.
+
+The guide requires an English Word report based on `AIN_Final_Report_Template.docx`, a 15–20-page main body, IEEE citations, and Appendices A–C. The locally prepared course report uses exactly 15 main-body pages, satisfying the template's additional maximum. The report, member metadata, and submission ZIP are local artifacts excluded from Git; they are not downloadable from a fresh clone. Prepare them using the official template and commands in the submission instructions. The separately requested APA 7 edition is a local alternative and is not the IEEE report required by this guide. The earlier IEEE PDF below is supplementary and is excluded from the ZIP.
+
+The required ZIP has one matching root folder containing `slides/`, `code/` and `report/`. `python scripts/package_submission.py` validates group metadata, agreed integer contributions totaling 100, original midterm-slide confirmation, report pagination and archive exclusions. `--review` creates an explicitly incomplete local review ZIP when required confirmations are pending. See `submission/SUBMISSION_STATUS.md`. Never regenerate slides and present them as the previously shown midterm deck. Only one representative submits through the instructor's link before the oral examination deadline.
+
 `reports/report.pdf` uses the installed official IEEEtran conference class. Editable files: `reports/report.tex`, `reports/references.bib`; report and architecture generation source: `scripts/build_final_report.py`. The generator reads actual saved evaluations and original ablations. To rebuild after evaluation:
 
 ```powershell
@@ -93,14 +101,17 @@ pdflatex -interaction=nonstopmode -halt-on-error report.tex
 pdflatex -interaction=nonstopmode -halt-on-error report.tex
 ```
 
-MiKTeX or TeX Live with IEEEtran, amsmath, graphicx and hyperref is required. No author identities or affiliations are invented: add actual team details before submission. `ORAL_DEFENSE.md` has technical questions and answers; `DEMO_SCRIPT.md` gives the 5–7 minute sequence; `FINAL_DELIVERY_CHECKLIST.md` records outstanding inputs. Source URLs are verified and included in the app and bibliography.
+MiKTeX or TeX Live with IEEEtran, amsmath, graphicx and hyperref is required for this supplementary PDF. Its author placeholders are not a completed submission cover. `ORAL_DEFENSE.md` has technical questions and answers; `DEMO_SCRIPT.md` gives the 5–7 minute sequence; `FINAL_DELIVERY_CHECKLIST.md` records outstanding inputs. Source URLs are included in the app and bibliography.
 
 ## Tests
 
 ```powershell
 python -m pip install -r requirements-dev.txt
 python -m pytest tests -q
+python scripts/check_submission_repo.py
 ```
+
+Independent Python 3.11.16 CPU installation passed 38 tests with one CUDA test skipped; see [submission QA](reports/AIN_SUBMISSION_QA.md). Repository and packaging checks added later are recorded separately. A clean checkout needs neither the full dataset nor local Word reports to run the product tests.
 
 The suite covers model/checkpoint shape and mapping, CPU/CUDA (when available), training checkpoint roundtrip, training/evaluation transforms, valid/corrupt/unsupported/oversized uploads, grayscale/alpha/EXIF, aspect ratios, guidance schema, manifest validation, Streamlit page rendering and upload-to-prediction/error rendering. Synthetic smoke images are not benchmark evidence. See `reports/QA.md` for executed checks and environment limitations.
 
