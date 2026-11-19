@@ -449,7 +449,7 @@ def load_trained_model(path: Path | str, *, device: str | torch.device | None = 
         raise FileNotFoundError(f"PyTorch checkpoint not found: {checkpoint_path}")
     device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
     try:
-        checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+        checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
     except TypeError:  # compatibility with earlier PyTorch versions
         checkpoint = torch.load(checkpoint_path, map_location=device)
     if checkpoint.get("format") != "project11-pytorch-v1":
@@ -459,6 +459,12 @@ def load_trained_model(path: Path | str, *, device: str | torch.device | None = 
     preprocessing = checkpoint.get("preprocessing", {})
     if preprocessing and preprocessing.get("color_mode") != "RGB":
         raise ValueError("Unsupported checkpoint preprocessing color mode")
+    expected = {"tensor_layout": "NCHW", "dtype": "float32",
+                "scale": "pixel_values_divided_by_255_to_[0,1]",
+                "normalization_mean": None, "normalization_std": None}
+    for key, value in expected.items():
+        if preprocessing.get(key) != value:
+            raise ValueError(f"Unsupported checkpoint preprocessing: {key}")
     config = dict(checkpoint["model_config"])
     config["input_shape"] = tuple(config["input_shape"])
     config["filters"] = tuple(config["filters"])

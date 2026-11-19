@@ -1,0 +1,14 @@
+{
+  "dark": {
+    "brightness": 0.3
+  },
+  "low_contrast": {
+    "contrast": 0.35
+  },
+  "defocus": {
+    "gaussian_radius": 2.0
+  },
+  "motion": {
+    "motion_kernel_width": 9
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "framework": "pytorch",
+  "data_mode": "full_trashnet",
+  "seed": 42,
+  "device": "cuda",
+  "epochs": 25,
+  "batch_size": 32,
+  "image_size": 64,
+  "fingerprint": "800ad9c42dfd2d41be2caa3f4c6a280ed45a9b0d8a3b37bf150cdedf5208a68f",
+  "experiments_run_this_command": [
+    "base",
+    "no_reg",
+    "aug_none",
+    "aug_full",
+    "drop_0.0",
+    "drop_0.5",
+    "depth_2",
+    "depth_3",
+    "lr_2e-4",
+    "lr_1e-2"
+  ],
+  "selected": "aug_none",
+  "selection_constraint": "dropout > 0",
+  "test_used_for_selection": false
+}

@@ -1,0 +1,48 @@
+{
+  "data_mode": "full_trashnet",
+  "seed": 42,
+  "image_size": [
+    64,
+    64
+  ],
+  "class_order": [
+    "cardboard",
+    "glass",
+    "metal",
+    "paper",
+    "plastic",
+    "trash"
+  ],
+  "class_counts": {
+    "train": {
+      "cardboard": 282,
+      "glass": 350,
+      "metal": 287,
+      "paper": 415,
+      "plastic": 337,
+      "trash": 95
+    },
+    "validation": {
+      "cardboard": 52,
+      "glass": 65,
+      "metal": 53,
+      "paper": 77,
+      "plastic": 62,
+      "trash": 17
+    },
+    "test": {
+      "cardboard": 69,
+      "glass": 86,
+      "metal": 70,
+      "paper": 102,
+      "plastic": 83,
+      "trash": 25
+    }
+  },
+  "skipped_metadata_candidate_counts": {
+    "train": 0,
+    "validation": 0,
+    "test": 0
+  },
+  "fingerprint": "800ad9c42dfd2d41be2caa3f4c6a280ed45a9b0d8a3b37bf150cdedf5208a68f"
+}

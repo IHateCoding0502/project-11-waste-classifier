@@ -1,0 +1,36 @@
+# Oral defense preparation
+
+1. **What is the task?** Single-image six-class classification of cardboard, glass, metal, paper, plastic and trash. It does not detect several objects or infer disposal safety.
+2. **What does convolution compute?** A shared kernel sums input-channel values over local neighborhoods for each output channel. PyTorch Conv2d implements cross-correlation; with input X and weights W, output is sum over c,u,v of W[o,c,u,v]X[c,si+u-p,sj+v-p], plus optional bias.
+3. **How are output dimensions derived?** Count valid kernel positions after padding: floor((input + 2 padding - kernel)/stride)+1 for dilation one. A 3×3, padding-one, stride-one convolution preserves size.
+4. **Why four pooling blocks?** Each stride-two max pool halves spatial dimensions: 64→32→16→8→4. It reduces computation and retains strongest local activations but loses detail.
+5. **Why ReLU?** max(0,x) supplies nonlinearity; without nonlinearities a stack of linear operations would remain linear. The gradient is one for positive inputs and zero for negative inputs.
+6. **What does BatchNorm do?** It normalizes each channel over batch/spatial values, then applies learned gamma and beta. Evaluation uses stored running statistics. It contributes 480 trainable parameters here; running buffers do not count.
+7. **Why global average pooling?** It averages each feature channel spatially and yields a 128-element vector without trainable parameters, reducing the dense head size.
+8. **What does dropout do?** In training it samples Bernoulli masks and scales survivors by 1/(1-p). Expected activation is preserved. In evaluation it is the identity; both selected dropout layers use p=.3.
+9. **How many parameters?** Convolutions: 97,200 without biases. BatchNorm: 480. Dense 128→128: 16,512. Dense 128→6: 774. Total 114,966, verified against the loaded PyTorch model.
+10. **What are logits?** Six unconstrained real scores. Softmax exponentiates shifted logits and normalizes them; argmax is unchanged. CrossEntropyLoss expects logits, not precomputed softmax.
+11. **Is 99% confidence 99% correctness?** No. These scores are uncalibrated. The most confident wrong examples reach about 91%–99.9%. Reliability analysis on separate data would be needed.
+12. **Why weighted cross-entropy?** Class counts differ. The code uses training-only inverse-frequency weights N/(6 n_k). PyTorch divides weighted batch losses by the sum of target weights, increasing rare-class contributions.
+13. **Derive its logit gradient.** For a single unweighted example, dL/dz_k=s_k−1[k=y]. In the weighted batch mean this is multiplied by w_y divided by the sum of target weights in the batch.
+14. **Why Macro-F1?** It averages six class F1 scores equally, highlighting minority-class errors that accuracy can hide. Precision=TP/(TP+FP), recall=TP/(TP+FN), F1=2PR/(P+R); zero denominators yield zero.
+15. **How were data split?** Seed-42 image-level split: train 1,766, validation 326, test 435. No test tuning. Original physical-object identities are unavailable, so object-level leakage remains possible.
+16. **What preprocessing is used?** PIL RGB, bilinear 64×64 resize, float32 /255, CHW. There is no ImageNet mean/std normalization. Upload-only orientation correction and white alpha compositing are explicitly documented.
+17. **Why aug_none?** Its validation Macro-F1 .720 is highest among configurations satisfying dropout >0. no_reg scored .815 but violates that constraint. The selection is a rubric trade-off, not unconstrained superiority.
+18. **Does no_reg overfit?** The name is not evidence. It retains BatchNorm and has higher validation F1 in this run. Discuss learning curves and train/validation gaps; do not claim worse independent generalization without evidence.
+19. **What did ablations change?** Augmentation none/geometric/full; dropout 0/.3/.5; depth (32,64), (16,32,64), or (16,32,64,128); learning rate .0002/.002/.01; no_reg removes both augmentation and dropout. Other settings and split are held fixed where applicable.
+20. **What is the original benchmark?** CNN 334/435 correct, 76.8% accuracy, 75.7% Macro-F1. Majority baseline 23.4%/6.3%; histogram centroid 38.4%/35.3%. These are test metrics; ablations use validation metrics.
+21. **What does the bootstrap interval mean?** Original Macro-F1 95% interval 70.9%–79.9% resamples test images. It does not capture random-seed variability, physical-object dependence or domain shift.
+22. **Why are glass and metal confused?** They can share reflections, colors and silhouettes. Counts include glass→metal 16 and metal→glass 13. Printed-label effects are plausible, not causally verified.
+23. **Can a confidence threshold detect unknown waste?** No validated unknown detector exists. Every input receives one of six labels. A 50% threshold fails on the known highly confident errors.
+24. **How are stress conditions evaluated?** Separate manifest conditions: standard, complex, synthetic low-light/blur, real camera low-light/blur and novel campus. The evaluator saves all scores, confusion matrices, per-class metrics, hashes and timed results using the same checkpoint as the app.
+25. **Are synthetic variants independent samples?** No. Four variants reuse each original source image. Aggregate intervals resample source-image clusters; original physical-object independence still cannot be guaranteed.
+26. **What real-world evidence is missing?** Genuine camera low-light/blur and novel campus sets have zero supplied images. The complex 12-image subset overlaps TrashNet and does not validate all deformations/backgrounds. Show pending status openly.
+27. **How should campus data be collected?** Aim for five distinct objects per class; use varied conditions and one evaluation image per object, independent labels, no training/validation reuse, no identifiable people. Freeze the challenge set before inference; do not tune on it.
+28. **How fast is inference?** New CPU standard mean is about 4.11 ms for warmed-up batch-one forward plus softmax. Decode/resize/transfers are excluded; CUDA is synchronized. This is not total upload latency or a hardware-neutral guarantee.
+29. **How does Streamlit avoid repeated model loading?** cache_resource keys on checkpoint path and modification time. The model is in eval mode and inference_mode; uploads are validated before decoding and users preview before Predict.
+30. **What does the Qwen comparison establish?** Only an exploratory 30-image observation: CNN 25/30 and Qwen 20/30 with original approximate .01/1.28 s per image. Prompt, sampling, parsing and hardware limitations prevent general architecture claims.
+31. **Can predicted material guarantee recycling acceptance?** No. General preparation is source-linked, while accepted items, bin colors and pickup arrangements must be confirmed with campus facilities/local collectors. Six model labels are not six official Vietnamese bins.
+32. **What would improve scientific confidence?** Independent object-grouped campus evaluation, multiple training seeds, explicit calibration evaluation on separate data and broader domain coverage. These are future work, not completed experiments.
+
+Before defense: read reports/report.pdf, review the actual error galleries, verify team authorship, rehearse using real photographs, and state remaining evidence gaps without implying tests passed.

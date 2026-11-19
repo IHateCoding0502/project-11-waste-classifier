@@ -1,0 +1,1 @@
+NOT VERIFIED: pip 26.3 resolved pinned dependency metadata, but the 124.1 MB PyTorch wheel download stalled without receiving bytes. Installation attempts stopped. Existing environment: 39 automated tests passed; app server health ok. See QA.md.

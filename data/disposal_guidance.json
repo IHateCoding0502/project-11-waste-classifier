@@ -1,0 +1,146 @@
+{
+  "cardboard": {
+    "category": "Cardboard",
+    "description": "Fiber-based packaging board.",
+    "examples": "Shipping boxes; cereal boxes.",
+    "preparation": "Remove contents and flatten boxes. Keep dry.",
+    "general_advice": "Ask the collector whether coated board is accepted.",
+    "warnings": "Food residue and mixed layers need separate checking.",
+    "local_guidance": "Vietnam reference context (campus location unconfirmed): the national guidance distinguishes reusable/recyclable waste, food waste and other household waste. These six model labels are not six official bins. Ask campus facilities or the local collector about accepted items, bin colors and pickup arrangements.",
+    "sources": [
+      {
+        "title": "US EPA: general material guidance (not Vietnamese collection rules)",
+        "url": "https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables"
+      },
+      {
+        "title": "Washington Ecology: preparation and acceptance checks (general reference)",
+        "url": "https://ecology.wa.gov/waste-toxics/reducing-recycling-waste/how-to-recycle/recycle-right"
+      },
+      {
+        "title": "Vietnam Environment Agency: source separation guidance",
+        "url": "https://vea.mae.gov.vn/tin-tuc-su-kien/10526/phan-loai-rac-thai-tai-nguo"
+      }
+    ],
+    "reviewed": "2026-11-19"
+  },
+  "glass": {
+    "category": "Glass",
+    "description": "Brittle glass packaging.",
+    "examples": "Bottles; jars.",
+    "preparation": "Empty and rinse containers.",
+    "general_advice": "Check whether local collection accepts bottles and jars.",
+    "warnings": "Do not assume ceramics, mirrors or bulbs share the same collection.",
+    "local_guidance": "Vietnam reference context (campus location unconfirmed): the national guidance distinguishes reusable/recyclable waste, food waste and other household waste. These six model labels are not six official bins. Ask campus facilities or the local collector about accepted items, bin colors and pickup arrangements.",
+    "sources": [
+      {
+        "title": "US EPA: general material guidance (not Vietnamese collection rules)",
+        "url": "https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables"
+      },
+      {
+        "title": "Washington Ecology: preparation and acceptance checks (general reference)",
+        "url": "https://ecology.wa.gov/waste-toxics/reducing-recycling-waste/how-to-recycle/recycle-right"
+      },
+      {
+        "title": "Vietnam Environment Agency: source separation guidance",
+        "url": "https://vea.mae.gov.vn/tin-tuc-su-kien/10526/phan-loai-rac-thai-tai-nguo"
+      }
+    ],
+    "reviewed": "2026-11-19"
+  },
+  "metal": {
+    "category": "Metal",
+    "description": "Metal packaging and containers.",
+    "examples": "Drink cans; food tins.",
+    "preparation": "Empty containers and remove food residue.",
+    "general_advice": "Check the collection route for the specific metal item.",
+    "warnings": "Batteries and hazardous containers need a separate collection route.",
+    "local_guidance": "Vietnam reference context (campus location unconfirmed): the national guidance distinguishes reusable/recyclable waste, food waste and other household waste. These six model labels are not six official bins. Ask campus facilities or the local collector about accepted items, bin colors and pickup arrangements.",
+    "sources": [
+      {
+        "title": "US EPA: general material guidance (not Vietnamese collection rules)",
+        "url": "https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables"
+      },
+      {
+        "title": "Washington Ecology: preparation and acceptance checks (general reference)",
+        "url": "https://ecology.wa.gov/waste-toxics/reducing-recycling-waste/how-to-recycle/recycle-right"
+      },
+      {
+        "title": "Vietnam Environment Agency: source separation guidance",
+        "url": "https://vea.mae.gov.vn/tin-tuc-su-kien/10526/phan-loai-rac-thai-tai-nguo"
+      }
+    ],
+    "reviewed": "2026-11-19"
+  },
+  "paper": {
+    "category": "Paper",
+    "description": "Thin cellulose sheets.",
+    "examples": "Office paper; newspapers.",
+    "preparation": "Keep clean and dry.",
+    "general_advice": "Reuse usable sheets; check acceptance for treated paper.",
+    "warnings": "Wet, laminated or contaminated sheets may need different handling.",
+    "local_guidance": "Vietnam reference context (campus location unconfirmed): the national guidance distinguishes reusable/recyclable waste, food waste and other household waste. These six model labels are not six official bins. Ask campus facilities or the local collector about accepted items, bin colors and pickup arrangements.",
+    "sources": [
+      {
+        "title": "US EPA: general material guidance (not Vietnamese collection rules)",
+        "url": "https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables"
+      },
+      {
+        "title": "Washington Ecology: preparation and acceptance checks (general reference)",
+        "url": "https://ecology.wa.gov/waste-toxics/reducing-recycling-waste/how-to-recycle/recycle-right"
+      },
+      {
+        "title": "Vietnam Environment Agency: source separation guidance",
+        "url": "https://vea.mae.gov.vn/tin-tuc-su-kien/10526/phan-loai-rac-thai-tai-nguo"
+      }
+    ],
+    "reviewed": "2026-11-19"
+  },
+  "plastic": {
+    "category": "Plastic",
+    "description": "Polymer packaging of many types.",
+    "examples": "Bottles; rigid containers.",
+    "preparation": "Empty and rinse.",
+    "general_advice": "A recycling symbol does not ensure local acceptance; ask the collector.",
+    "warnings": "Film, foam and compostable plastics need specific acceptance checks.",
+    "local_guidance": "Vietnam reference context (campus location unconfirmed): the national guidance distinguishes reusable/recyclable waste, food waste and other household waste. These six model labels are not six official bins. Ask campus facilities or the local collector about accepted items, bin colors and pickup arrangements.",
+    "sources": [
+      {
+        "title": "US EPA: general material guidance (not Vietnamese collection rules)",
+        "url": "https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables"
+      },
+      {
+        "title": "Washington Ecology: preparation and acceptance checks (general reference)",
+        "url": "https://ecology.wa.gov/waste-toxics/reducing-recycling-waste/how-to-recycle/recycle-right"
+      },
+      {
+        "title": "Vietnam Environment Agency: source separation guidance",
+        "url": "https://vea.mae.gov.vn/tin-tuc-su-kien/10526/phan-loai-rac-thai-tai-nguo"
+      }
+    ],
+    "reviewed": "2026-11-19"
+  },
+  "trash": {
+    "category": "Trash",
+    "description": "Residual benchmark category, not a safety classification.",
+    "examples": "Mixed or soiled residual items.",
+    "preparation": "Check the actual material before choosing a disposal route.",
+    "general_advice": "Follow the collector instructions for residual waste.",
+    "warnings": "A trash prediction cannot establish that batteries or chemicals are safe.",
+    "local_guidance": "Vietnam reference context (campus location unconfirmed): the national guidance distinguishes reusable/recyclable waste, food waste and other household waste. These six model labels are not six official bins. Ask campus facilities or the local collector about accepted items, bin colors and pickup arrangements.",
+    "sources": [
+      {
+        "title": "US EPA: general material guidance (not Vietnamese collection rules)",
+        "url": "https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables"
+      },
+      {
+        "title": "Washington Ecology: preparation and acceptance checks (general reference)",
+        "url": "https://ecology.wa.gov/waste-toxics/reducing-recycling-waste/how-to-recycle/recycle-right"
+      },
+      {
+        "title": "Vietnam Environment Agency: source separation guidance",
+        "url": "https://vea.mae.gov.vn/tin-tuc-su-kien/10526/phan-loai-rac-thai-tai-nguo"
+      }
+    ],
+    "reviewed": "2026-11-19"
+  }
+}
