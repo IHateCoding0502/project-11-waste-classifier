@@ -6,11 +6,10 @@ predict) while adding probability prediction and checkpoint loading.
 """
 from __future__ import annotations
 
-import io
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, BinaryIO
+from typing import Any
 
 import numpy as np
 from PIL import Image, ImageEnhance, ImageOps
@@ -54,13 +53,15 @@ def _is_image_candidate(path: Path) -> bool:
 
 
 def _open_rgb(source: Any, image_size: tuple[int, int]) -> Image.Image:
-    """Open a path or file-like object, return RGB PIL image resized to (W,H)."""
+    """Resize a decoded image, path or file with the evaluation transform."""
+    size = (int(image_size[1]), int(image_size[0]))
+    if isinstance(source, Image.Image):
+        rgb = source if source.mode == "RGB" else source.convert("RGB")
+        return rgb.resize(size, Image.Resampling.BILINEAR)
     if hasattr(source, "seek"):
         source.seek(0)
     with Image.open(source) as image:
-        image = image.convert("RGB")
-        image = image.resize((int(image_size[1]), int(image_size[0])), Image.Resampling.BILINEAR)
-        return image.copy()
+        return image.convert("RGB").resize(size, Image.Resampling.BILINEAR)
 
 
 def image_to_tensor(source: Any, image_size: tuple[int, int]) -> torch.Tensor:

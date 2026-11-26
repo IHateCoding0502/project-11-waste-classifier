@@ -31,13 +31,21 @@ def prohibited_paths(paths):
     return issues
 
 def main():
-    result=subprocess.run(['git','ls-files','-z'],cwd=ROOT,capture_output=True,check=True)
-    paths=[p.decode('utf-8') for p in result.stdout.split(b'\0') if p]
+    if (ROOT/'.git').exists():
+        result=subprocess.run(['git','ls-files','-z'],cwd=ROOT,capture_output=True,check=True)
+        paths=[p.decode('utf-8') for p in result.stdout.split(b'\0') if p]
+        label='tracked'
+    else:
+        # An extracted course archive has no Git directory. Do not accidentally
+        # inspect a parent checkout when the ZIP is tested under its tmp/ folder.
+        paths=[p.relative_to(ROOT).as_posix() for p in ROOT.rglob('*') if p.is_file()]
+        paths=[p for p in paths if p!='submission/team.json']
+        label='archived'
     issues=prohibited_paths(paths)
     issues += [f'Required source file is not tracked: {p}' for p in sorted(REQUIRED-set(paths))]
     if issues:
         print('\n'.join(issues));return 1
-    print(f'PASS: {len(paths)} tracked files; required starter, checkpoint and packaging tools present; no prohibited paths.')
+    print(f'PASS: {len(paths)} {label} files; required starter, checkpoint and packaging tools present; no prohibited paths.')
     print('Course readiness still requires the local DOCX, confirmed original slides and agreed contributions.')
     return 0
 

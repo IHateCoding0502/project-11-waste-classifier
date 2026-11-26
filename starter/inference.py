@@ -23,6 +23,10 @@ class Upload:
     original_size: tuple[int, int]
 
 
+class InvalidPrediction(ValueError):
+    """The checkpoint returned an unusable set of class scores."""
+
+
 def decode_upload(data: bytes) -> Upload:
     """Check bytes before decoding; composite transparency on white for display."""
     if not data or len(data) > MAX_BYTES:
@@ -45,7 +49,8 @@ def decode_upload(data: bytes) -> Upload:
                     rgba = image.convert("RGBA")
                     background = Image.new("RGBA", rgba.size, "white")
                     image = Image.alpha_composite(background, rgba)
-                return Upload(image.convert("RGB"), fmt, size)
+                rgb = image if image.mode == "RGB" else image.convert("RGB")
+                return Upload(rgb, fmt, size)
     except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombError,
             Image.DecompressionBombWarning) as exc:
         raise ValueError("Invalid, corrupted, or unsafe image. Please use a valid JPEG/PNG.") from exc
@@ -57,24 +62,25 @@ def infer(model, image: Image.Image) -> dict:
     Preprocessing is exactly the training RGB/bilinear/[0,1] transform.
     EXIF and alpha handling are explicitly upload-only adaptations.
     """
-    buffer = io.BytesIO()
-    image.save(buffer, format="PNG")
     device = next(model.parameters()).device
-    tensor = image_to_tensor(buffer, model.image_size).unsqueeze(0).to(device)
+    tensor = image_to_tensor(image, model.image_size).unsqueeze(0).to(device)
     model.eval()
     if device.type == "cuda":
         torch.cuda.synchronize(device)
     start = time.perf_counter()
     with torch.inference_mode():
         logits = model(tensor)
-        if logits.shape != (1, 6) or not torch.isfinite(logits).all():
-            raise ValueError("Checkpoint must produce exactly six finite logits.")
+        if (not isinstance(logits, torch.Tensor) or not logits.is_floating_point()
+                or logits.shape != (1, len(CLASSES))):
+            raise InvalidPrediction("Checkpoint must produce exactly six floating-point logits.")
         scores = torch.softmax(logits, dim=1)
     if device.type == "cuda":
         torch.cuda.synchronize(device)
     elapsed = time.perf_counter() - start
+    if not torch.isfinite(logits).all():
+        raise InvalidPrediction("Checkpoint must produce exactly six finite logits.")
     values = scores[0].cpu().tolist()
-    label = CLASSES[max(range(6), key=values.__getitem__)]
+    label = CLASSES[max(range(len(CLASSES)), key=values.__getitem__)]
     return {"label": label, "confidence": max(values),
             "scores": dict(zip(CLASSES, values)), "seconds": elapsed,
             "device": str(device)}

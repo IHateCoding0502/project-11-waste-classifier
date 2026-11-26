@@ -1,6 +1,6 @@
-# Visual Waste Sorting Assistant
+# EcoVision AI — Intelligent Waste Classification
 
-Experimental six-class image classifier, using the original from-scratch PyTorch CNN and the selected **aug_none** checkpoint. No model was replaced or retrained during this upgrade.
+A local Streamlit dashboard for inspecting a waste photo, reviewing a six-class CNN prediction and checking how to sort the material. The included **aug_none** checkpoint is the team's original PyTorch CNN.
 
 ## Run locally (Windows PowerShell)
 
@@ -18,13 +18,24 @@ Run the application with one command:
 .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-On Linux/macOS use `python3.11 -m venv .venv`, activate it and run the same Python module commands. Upgrade pip before installation. NumPy 2.3.5 is pinned for Python 3.11; Python 3.12 and newer retain NumPy 2.5.4 from the original environment. Other direct dependencies remain pinned. CPU inference is supported automatically; CUDA depends on the installed PyTorch build. `requirements-dev.txt` adds tests and historical presentation tooling. Once dependencies and the supplied team-trained checkpoint are installed, the application runs offline and does not call an LLM API.
+On Linux/macOS use `python3.11 -m venv .venv`, activate it and run the same Python module commands. Upgrade pip before installation. NumPy 2.3.5 is pinned for Python 3.11; Python 3.12 and newer retain NumPy 2.5.4 from the original environment. Other direct dependencies remain pinned. CPU inference is supported automatically; CUDA depends on the installed PyTorch build. `requirements-dev.txt` adds tests and historical presentation tooling. Once dependencies and the supplied team-trained checkpoint are installed, the CNN runs offline. The optional comparison sends a photo only to Ollama on this device when you explicitly choose to compare. `streamlit run starter/app.py` and the root entry point open the same dashboard.
 
 ## Product
 
-Four pages: Waste Classifier, Model Information, Known Limitations & Failure Modes, Robustness Testing. Upload JPEG/PNG, inspect the preview, then select Predict. Six horizontal scores, timing and source-linked material guidance are shown. Limits: 10 MiB, 20 megapixels, 8192 pixels per side. EXIF orientation, grayscale and transparent PNG are supported; invalid files receive an error.
+| Page | What you can do |
+|---|---|
+| Home / Dashboard | Start classification, browse the six materials and check this session's CNN count and mean forward latency. |
+| Waste Classification | Upload a JPEG/PNG, capture a photo or choose a demo sample. Inspect the preview and choose **Classify Waste** for six scores, the top three classes, timing and disposal guidance. |
+| Model Comparison | Compare the CNN and a locally installed `qwen2.5vl:3b` on the same photo. The app shows the returned label, response, timing and agreement. Qwen confidence is unavailable. |
+| Model Analytics | Explore the saved test metrics, confusion matrix, class breakdown, training curves and stress results. |
+| Waste Sorting Guide | Look up material examples, common mix-ups, handling and local collection references. |
+| About Project | Review inference, architecture, dataset splits, model selection and limitations. |
 
-The Eco-Tech interface uses a forest-green sidebar, responsive cards and a dedicated classification workspace. Styles are maintained in `assets/streamlit.css`; the native theme is in `.streamlit/config.toml`. Prediction results persist while reviewing guidance and clear when the uploaded image changes. UI verification and desktop/mobile screenshots are recorded in `reports/UI_REDESIGN_QA.md`.
+Choose the appearance in Streamlit's **⋮ → Settings** menu. The sidebar supports automatic device selection and CPU-only inference. Camera access requires a supported browser with permission on localhost or HTTPS. Upload limits are 10 MiB, 20 megapixels and 8,192 pixels per side. The decoder handles EXIF orientation, grayscale and transparency.
+
+The CNN is loaded on demand and cached by checkpoint version and device. Session statistics count actual CNN executions, including comparisons. Reusing the current image result does not add a prediction. The displayed CNN time covers its forward pass and softmax. Ollama's request latency includes local service overhead and may include loading the model.
+
+The CNN requires no Ollama installation. To compare, use a running local Ollama instance with `qwen2.5vl:3b` installed. The dashboard uses the local HTTP interface at `127.0.0.1:11434`; it never starts the service or downloads a model. The optional historical benchmark CLI has its own Python-client dependency. No TensorFlow, torchvision, external font service or hosted AI API is required by the dashboard.
 
 Softmax scores are **not calibrated probabilities**. Unknown objects still receive one of the six labels. The model is an educational prototype; it does not determine hazardous-waste safety or guarantee collector acceptance. Guidance distinguishes general recycling preparation from Vietnam reference context; campus location and local collection arrangements are unconfirmed.
 
@@ -40,7 +51,7 @@ The selected aug_none has validation Macro-F1 .720. no_reg achieved .815 but had
 | Color-histogram centroid | 38.4% | 35.3% |
 | Selected CNN | 76.8% | 75.7% |
 
-334/435 correct; original Macro-F1 bootstrap 95% CI 70.9%–79.9%. Single-seed and possible physical-object leakage limit conclusions. The preliminary 30-image Qwen comparison (CNN 25/30, Qwen 20/30) is exploratory and does not prove general CNN superiority.
+334/435 correct; original Macro-F1 bootstrap 95% CI 70.9%–79.9%. Single-seed and possible physical-object leakage limit conclusions. The preliminary 30-image Qwen comparison (CNN 25/30, Qwen 22/30 in `results/qwen_comparison_summary.csv`) is exploratory and does not prove general CNN superiority.
 
 ## Checkpoint and dataset
 
@@ -113,7 +124,7 @@ python scripts/check_submission_repo.py
 
 Independent Python 3.11.16 CPU installation passed 38 tests with one CUDA test skipped; see [submission QA](reports/AIN_SUBMISSION_QA.md). Repository and packaging checks added later are recorded separately. A clean checkout needs neither the full dataset nor local Word reports to run the product tests.
 
-The suite covers model/checkpoint shape and mapping, CPU/CUDA (when available), training checkpoint roundtrip, training/evaluation transforms, valid/corrupt/unsupported/oversized uploads, grayscale/alpha/EXIF, aspect ratios, guidance schema, manifest validation, Streamlit page rendering and upload-to-prediction/error rendering. Synthetic smoke images are not benchmark evidence. See `reports/QA.md` for executed checks and environment limitations.
+The suite covers model/checkpoint shape and mapping, CPU/CUDA (when available), training checkpoint roundtrip, training/evaluation transforms, valid/corrupt/unsupported/oversized uploads, grayscale/alpha/EXIF, aspect ratios, guidance schema, manifest validation, Streamlit page rendering and upload-to-prediction/error rendering. Synthetic smoke images are not benchmark evidence. See `reports/QA.md` for the earlier product checks. The home-page thumbnails are crops of TrashNet cardboard146, glass315, metal301, paper248, plastic106 and trash66. Attribution and the license are in `data/LICENSE.md`.
 
 ## Repository
 
@@ -121,7 +132,10 @@ The suite covers model/checkpoint shape and mapping, CPU/CUDA (when available), 
 app.py                       canonical Streamlit entry point
 starter/student_core.py      original model/training/checkpoint API
 starter/inference.py         upload validation and shared timed inference
-starter/app.py               four-page interface; legacy entry point works
+starter/app.py               EcoVision home, navigation and sidebar settings
+starter/dashboard_*.py       classifier, local comparison, analytics and sorting guide
+starter/ollama_service.py     optional local vision adapter
+assets/                      dashboard styles and six TrashNet thumbnails
 models/waste_cnn.pth          selected original checkpoint
 data/disposal_guidance.json  six materials, warnings, local scope and URLs
 data/stress_tests/           manifests, protocol, separate photo directories

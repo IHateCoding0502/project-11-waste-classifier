@@ -227,10 +227,15 @@ def test_prepare_dataset_excludes_metadata_and_corrupt_images(tmp_path: Path):
     assert repeated["splits"] == manifest["splits"]
 
 
-def test_streamlit_app_uses_pytorch_checkpoint_and_syntax_compiles():
-    import py_compile
-    app_source = (ROOT / "starter" / "app.py").read_text(encoding="utf-8")
-    assert 'waste_cnn.pth' in app_source
-    assert "load_trained_model" in app_source and "render_prediction" in app_source
-    assert ".keras" not in app_source and "tensorflow" not in app_source.lower()
-    py_compile.compile(str(ROOT / "starter" / "app.py"), doraise=True)
+def test_streamlit_service_loads_real_checkpoint_and_returns_canonical_scores():
+    from starter import dashboard_classify as service
+
+    assert service.CHECKPOINT == ROOT / "models" / "waste_cnn.pth"
+    token = service.checkpoint_token()
+    assert token is not None
+    model = service.get_model(str(service.CHECKPOINT), token, "cpu")
+    assert not model.training and model is service.get_model(str(service.CHECKPOINT), token, "cpu")
+    with Image.open(SAMPLE_DIR / "plastic" / "plastic_01.png") as sample:
+        result = service.infer(model, sample.convert("RGB"))
+    assert tuple(result["scores"]) == CLASSES
+    assert result["label"] == max(result["scores"], key=result["scores"].get)

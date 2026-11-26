@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import io
 import json
 import math
 import random
@@ -54,27 +53,12 @@ except ImportError as exc:
         f"Original error: {exc}"
     )
 
-DEFAULT_MODEL = "qwen2.5vl:3b"
+from starter.ollama_service import (
+    DEFAULT_MODEL, JSON_HINT, LABEL_SCHEMA, PROMPT, QWEN_MAX_SIDE, STRUCTURED_OPTIONS, encode_image,
+)
+
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 UNCERTAIN = "uncertain"
-
-PROMPT = (
-    "Classify this waste image into exactly ONE category: "
-    "cardboard, glass, metal, paper, plastic, trash. "
-    "Reply with only one category name."
-)
-JSON_HINT = ' Respond as JSON: {"label": "<category>"}'
-
-# Resize images before sending them to Qwen: 448 px -> ~256 image tokens.
-# Huge images make small VLMs much more likely to fall into repetition loops
-# ("token repeat limit reached").
-QWEN_MAX_SIDE = 448
-
-LABEL_SCHEMA = {
-    "type": "object",
-    "properties": {"label": {"type": "string", "enum": list(CLASSES)}},
-    "required": ["label"],
-}
 
 # Attempt 1: structured output (answer is forced to be one of the 6 labels and
 #            generation ends right after the closing brace).
@@ -82,7 +66,7 @@ LABEL_SCHEMA = {
 QWEN_ATTEMPTS: list[dict[str, Any]] = [
     {
         "format": LABEL_SCHEMA,
-        "options": {"temperature": 0, "num_predict": 30, "repeat_penalty": 1.1, "num_ctx": 2048},
+        "options": STRUCTURED_OPTIONS,
     },
     {
         "format": None,
@@ -212,11 +196,7 @@ def predict_cnn(model: Any, image_path: Path) -> tuple[str, float | None, float,
 def load_image_bytes(image_path: Path, max_side: int = QWEN_MAX_SIDE) -> bytes:
     """Load, convert to RGB, shrink and re-encode as JPEG bytes."""
     with Image.open(image_path) as img:
-        img = img.convert("RGB")
-        img.thumbnail((max_side, max_side))
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=90)
-        return buf.getvalue()
+        return encode_image(img, max_side)
 
 
 def parse_label(text: str) -> str:

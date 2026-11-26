@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parent.parent
 VALID_CLASSES={'61FIT3AIN-TUT01','61FIT3AIN-TUT02','66FIT3AIN-TT02','66FIT3AIN-TT03','62FIT4ATI-CLC02','62FIT4ATI-CLC03'}
-PATTERNS=['app.py','README.md','.gitignore','requirements*.txt','run_app.ps1','.streamlit/*.toml','assets/*.css',
+PATTERNS=['app.py','README.md','.gitignore','requirements*.txt','run_app.ps1','.streamlit/*.toml','assets/*.css','assets/material-samples.webp',
           'starter/*.py','scripts/*.py','scripts/*.ps1','tests/*.py','data/sample/**/*',
           'data/LICENSE.md','data/README.md','data/disposal_guidance.json',
           'data/stress_tests/*.csv','data/stress_tests/*.json','data/stress_tests/*.md',
@@ -21,6 +21,7 @@ PATTERNS=['app.py','README.md','.gitignore','requirements*.txt','run_app.ps1','.
           'results/*.json','results/*.csv','results/*.md','results/figures/*.png',
           'results/stress/*.json','results/stress/*.csv','results/stress/*.png',
           'reports/architecture.png','reports/ui-desktop.jpg','reports/ui-mobile.jpg',
+          'reports/submission_figures/*.png','submission/README.md','submission/team.example.json',
           'results/compatibility311/metrics.json','results/compatibility311/scenario_comparison.csv',
           'ORAL_DEFENSE.md','DEMO_SCRIPT.md','FINAL_DELIVERY_CHECKLIST.md']
 FORBIDDEN={'.git','.venv','venv','env','__pycache__','.pytest_cache','.ipynb_checkpoints',
@@ -107,8 +108,8 @@ training script and loads on CPU automatically; CUDA requires a compatible PyTor
 ```
 
 The legacy entry point `streamlit run starter/app.py` also works. Open the displayed localhost URL,
-upload one JPEG/PNG, inspect its preview and select Predict. All six scores and material guidance
-are displayed. The four pages preserve model details, failure analysis and saved stress results.
+open Waste Classification, upload a JPEG/PNG, inspect the preview and select Classify Waste.
+Six pages cover classification, optional local comparison, saved analytics, sorting guidance and model details.
 
 ## Tests and model validation
 
@@ -118,7 +119,7 @@ python -m pytest tests -q
 python scripts/validate_checkpoint.py
 ```
 
-Independent Python 3.11.16 CPU verification: 38 passed, one CUDA test skipped. Full test
+Python 3.11.16 CPU verification after adding packaging checks: 43 passed, one CUDA test skipped. Full test
 images are intentionally absent from this archive; the included synthetic samples exercise
 software behavior only. CPU/CUDA model tests use the supplied team-trained checkpoint.
 
@@ -137,6 +138,11 @@ after data preparation. The guide excludes data/train, data/validation and data/
 Saved results remain in results/ so numeric tables and galleries can be inspected offline.
 Appendix A maps commands to tables and figures. Original baselines and ablations use seed 42;
 retraining is not guaranteed to reproduce numbers bit-for-bit. Never alter new scores to match old ones.
+
+The optional Model Comparison page connects to an already running local Ollama service only
+when requested. It requires qwen2.5vl:3b for a live comparison. The CNN functions offline
+without Ollama. The dashboard never starts or downloads the optional model. Saved benchmark
+results and the historical scripts/compare_qwen.py utility are included for reproducibility.
 
 ## Checkpoint and preprocessing
 

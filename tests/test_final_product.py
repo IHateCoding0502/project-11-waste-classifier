@@ -73,32 +73,46 @@ def test_guidance_schema_complete():
         assert all(entry.get(f) for f in ['category','description','examples','preparation','general_advice','warnings','local_guidance','sources'])
         assert all(s['url'].startswith('https://') for s in entry['sources'])
 
-def test_app_pages():
+@pytest.mark.parametrize("entry", ["app.py", "starter/app.py"])
+def test_app_pages(entry):
     from streamlit.testing.v1 import AppTest
-    app=AppTest.from_file(str(ROOT/'app.py')).run(timeout=30)
-    assert not app.exception
-    for page in ['Model Information','Known Limitations & Failure Modes','Robustness Testing']:
-        app.sidebar.radio[0].set_value(page).run(timeout=30)
-        assert not app.exception
+
+    app = AppTest.from_file(str(ROOT / entry)).run(timeout=30)
+    assert not app.exception and app.button(key="start_classifying")
+    for page in ("Waste Classification", "Model Comparison", "Model Analytics",
+                 "Waste Sorting Guide", "About Project"):
+        app.sidebar.radio(key="navigation").set_value(page).run(timeout=30)
+        assert not app.exception and app.title[0].value == page
+
 
 def test_app_upload_preview_prediction_and_error(monkeypatch):
     import streamlit as st
     from streamlit.testing.v1 import AppTest
+
     class Upload:
-        name='real_upload.png'
-        def getvalue(self): return encoded()
-    monkeypatch.setattr(st,'file_uploader',lambda *a,**k:Upload())
-    app=AppTest.from_file(str(ROOT/'app.py')).run(timeout=30)
-    assert not app.exception and any('Original 31' in c.value for c in app.caption)
-    app.button[0].click().run(timeout=30)
-    assert not app.exception and len(app.get('progress'))==6 and len(app.metric)==2
-    # Guidance interaction must preserve the current prediction, while a new
-    # image must never inherit the previous image's class scores.
-    app.selectbox[0].set_value('glass').run(timeout=30)
-    assert not app.exception and len(app.get('progress'))==6
-    monkeypatch.setattr(Upload,'getvalue',lambda self:encoded(size=(32,16)))
+        name = "real_upload.png"
+        data = encoded()
+
+        def getvalue(self):
+            return self.data
+
+    upload = Upload()
+    monkeypatch.setattr(st, "file_uploader", lambda *args, **kwargs: upload)
+    app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
+    app.button(key="start_classifying").click().run(timeout=30)
+    assert not app.exception and any("Original 31" in c.value for c in app.caption)
+    next(button for button in app.button if button.label == "Classify Waste").click().run(timeout=30)
+    assert not app.exception and len(app.get("progress")) == 6 and len(app.metric) == 2
+    result = next(iter(app.session_state["cnn_results"].values()))
+    assert app.metric[0].value == f"{result['confidence']:.1%}"
+    assert any(result['label'].title() in m.value for m in app.markdown)
+    assert any(m.value == f"Sorting {result['label']}" for m in app.subheader)
+    # An unrelated rerun must keep both the displayed result and the session count.
     app.run(timeout=30)
-    assert not app.exception and len(app.metric)==0 and len(app.get('progress'))==0
-    monkeypatch.setattr(Upload,'getvalue',lambda self:b'invalid')
+    assert len(app.get("progress")) == 6 and app.session_state["cnn_runs"] == 1
+    upload.data = encoded(size=(32, 16))
     app.run(timeout=30)
-    assert not app.exception and len(app.error)==1
+    assert not app.exception and not app.metric and not app.get("progress")
+    upload.data = b"invalid"
+    app.run(timeout=30)
+    assert not app.exception and len(app.error) == 1
